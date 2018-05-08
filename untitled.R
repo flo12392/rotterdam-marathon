@@ -28,7 +28,7 @@ df_runners$lat_noise = runif(nrow(df_runners),-0.0008,0.0008)
 df_runners$lon_noise = runif(nrow(df_runners),-0.0008,0.0008)
 
 # Split times and dists
-X <- get_split_times_per_runner_and_remove_incomplete_runners (df_runners)
+X <- get_split_times_per_runner_and_remove_incomplete_runners(df_runners)
 df_runners <- X[['df_runners']]
 split_times <- X[['split_times']]
 split_dists <- get_split_dists(df_runners)
@@ -39,4 +39,11 @@ split_speed = lapply(split_times,function(x) {as.list(diff(split_dists)/diff(x) 
 df_split_speeds = rbindlist(split_speed)
 df_split_speeds$gender = df_runners$gender
 df_split_speeds$bib = df_runners$bib
-x = melt(df_split_speeds,id.vars=c('bib'))
+x = melt(df_split_speeds,id.vars=c('bib','gender'))
+library(dplyr)
+y = x %>% group_by(bib) %>% mutate(relative_speed = value/mean(value))
+y = y %>% group_by(gender, variable) %>% summarize(avg_relative_speed = mean(relative_speed))
+y$gender=factor(y$gender)
+library(ggplot2)
+ggplot(data=y,aes(x=variable,y=avg_relative_speed,group=gender)) + geom_line(aes(colour=gender))
+

@@ -64,9 +64,10 @@ get_track <- function()
 
 # Get the split times for each runner. Output is a list of vectors, 
 # where each entry in the list contains the split times for one runner.
-get_split_times_per_runner_and_remove_incomplete_runners <- function(df_runners){
+get_split_times_per_runner_and_remove_incomplete_runners <- function(df_runners,removeIncomplete=T){
   split_cols = colnames(df_runners)[grepl('_time',colnames(df_runners))]
-  df_runners = df_runners[which(rowSums(is.na(df_runners[,split_cols,with=F]))<1),]
+  if (removeIncomplete)
+      df_runners = df_runners[which(rowSums(is.na(df_runners[,split_cols,with=F]))<1),]
   split_times = lapply(1:nrow(df_runners), function(x) {c(0,as.numeric(as.vector(df_runners[x,split_cols,with=F])))*60*24})
   return(list('df_runners' = df_runners, 'split_times' = split_times))
 }
