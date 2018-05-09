@@ -6,6 +6,8 @@ get_marathon_results <- function()
     source('get_marathon_results_from_api.R')
   }
   df_runners <- readRDS('data/result.RDS')
+  df_runners$gender = factor(c('Male','Female')[df_runners$gender])
+  return(df_runners)
 }
 
 
